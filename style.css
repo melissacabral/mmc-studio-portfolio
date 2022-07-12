@@ -719,7 +719,7 @@ span.current.page-numbers{
     color:white;    
 }
 .pagination a[rel=next], 
-.pagination a[rel=prev],
+.pagination a[rel=prev]
 {
     background-color: #E7452A;
     color:white;
