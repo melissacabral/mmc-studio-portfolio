@@ -60,6 +60,11 @@ function studio_excerpt_length(){
 		return 75; //words
 	}	
 }
+add_filter( 'excerpt_more', 'studio_excerpt_more' );
+function studio_excerpt_more(){
+	$link = get_the_permalink();
+	return "&hellip; <a href='$link' class='button'>Read More</a>";
+}
 
 
 /*
@@ -103,6 +108,51 @@ function studio_scripts(){
 	//get the theme info so we can use the version
 	$theme = wp_get_theme();
 	wp_enqueue_style( 'theme-style', get_stylesheet_uri() , array() , $theme->get('Version')  );	
+}
+
+/**
+ * Menu Areas - this code unlocks the menus admin area
+ */
+add_action( 'init' , 'studio_menu_areas' );
+function studio_menu_areas(){
+	register_nav_menus( array(
+		'main_nav' => 'Main Navigation',
+		'utilities'	=> 'Utility Area',
+	) );
+}
+
+/*
+Fallback Callback for the utility menu
+*/
+function studio_menu_default(){
+	echo 'Choose a Utility Menu in the admin panel';
+}
+
+/**
+ * Pagination function that can work on any template
+ */
+function studio_pagination(){
+	echo '<div class="pagination">';
+	if( is_singular() ){
+		previous_post_link('%link', '&larr; %title');
+		next_post_link('%link', '%title &rarr;');
+	}else{
+		//archive pagination 
+		//if mobile, do next/previous buttons
+		if( wp_is_mobile() ){
+			previous_posts_link( '&larr; Previous' );
+			next_posts_link( 'Next &rarr;' );
+		}else{
+			//desktop - numbered pagination
+			the_posts_pagination(array(
+				'prev_text' => '&larr; Previous',
+				'next_text' => 'Next &rarr;',
+				'mid_size' => 3,
+			));
+		}
+		
+	}
+	echo '</div>';
 }
 
 

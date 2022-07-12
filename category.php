@@ -37,6 +37,9 @@
 		<!-- end .post -->
 	<?php
 		} //end while 
+
+		studio_pagination();
+		
 	}else{
 		echo 'Sorry, No Posts.';
 	} //end The Loop

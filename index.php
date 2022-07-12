@@ -20,6 +20,14 @@
 				//if this is a single post or page, show the full content
 				if( is_singular() OR has_post_format( 'link' ) ){
 					the_content(); //full
+					//support paginated posts
+					wp_link_pages(array(
+						'next_or_number' => 'next',
+						'before' 	=> '<div class="post-pagination">Keep Reading: ',
+						'after' 	=> '</div>',
+						'nextpagelink' => 'Next &rarr;',
+						'previouspagelink'	=> '&larr; Previous',
+					)); 
 				}else{
 					the_excerpt(); //teaser
 				}
@@ -43,6 +51,9 @@
 		
 	<?php
 		} //end while 
+
+		studio_pagination();
+
 	}else{
 		echo 'Sorry, No Posts.';
 	} //end The Loop
