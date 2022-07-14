@@ -45,7 +45,7 @@
 		<!-- end .post -->
 
 		<?php 
-		//comments and the comment form
+		//comments and the comment form (requires comments.php)
 		comments_template(); 
 		?>
 		

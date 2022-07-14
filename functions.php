@@ -5,6 +5,9 @@ add_theme_support('post-thumbnails');
 //custom body background
 add_theme_support('custom-background');
 
+//improve RSS feeds
+add_theme_support( 'automatic-feed-links' );
+
 //custom header. 
 //dev: don't forget to display your header in header.php
 $args = array(
@@ -154,6 +157,97 @@ function studio_pagination(){
 	}
 	echo '</div>';
 }
+
+/**
+ * Register all widget areas
+ */
+add_action( 'widgets_init', 'studio_widget_areas' );
+function studio_widget_areas(){
+	//set up one widget area
+	register_sidebar( array(
+		'name' 			=> 'Blog Sidebar',
+		'id'			=> 'blog_sidebar',
+		'before_widget' => '<section id="%1$s" class="widget %2$s">',
+		'after_widget' 	=> '</section>',
+		'before_title'	=> '<h3 class="widget-title">',
+		'after_title' 	=> '</h3>',
+	) );
+	register_sidebar( array(
+		'name' 			=> 'Footer Area',
+		'id'			=> 'footer_area',
+		'before_widget' => '<section id="%1$s" class="widget %2$s">',
+		'after_widget' 	=> '</section>',
+		'before_title'	=> '<h3 class="widget-title">',
+		'after_title' 	=> '</h3>',
+	) );
+	register_sidebar( array(
+		'name' 			=> 'Home Footer Area',
+		'id'			=> 'home_footer_area',
+		'before_widget' => '<section id="%1$s" class="widget %2$s">',
+		'after_widget' 	=> '</section>',
+		'before_title'	=> '<h3 class="widget-title">',
+		'after_title' 	=> '</h3>',
+	) );
+}
+
+
+
+/**
+ * 	Change how comments are counted 
+ * 	- only count real comments, not trackbacks
+ */
+add_filter( 'get_comments_number', 'studio_comments_number');
+function studio_comments_number(){
+	//the post we're counting comments on
+	global $id; 
+
+	$comments = get_approved_comments( $id );
+	$count = 0;
+	foreach( $comments AS $comment ){
+		if( $comment->comment_type == 'comment' ){
+			$count ++;
+		}
+	}
+	return $count;
+}
+
+/**
+ * Count Just the pingbacks and trackbacks
+ * @return mixed 0 if no pings, otherwise return the count with grammar
+ */
+function studio_pings_number(){
+	global $id; 
+	$comments = get_approved_comments( $id );
+	$count = 0;
+	foreach( $comments AS $comment ){
+		if( $comment->comment_type != 'comment' ){
+			$count ++;
+		}
+	}
+	if( $count == 0 ){
+		return 0;
+	}else{
+		return $count == 1 ? 'One site mentions' : "$count sites mention";
+	}
+}
+
+/**
+ * pagination for comment lists
+ */
+function studio_comments_pagination(){
+	//if pagination is needed, show it
+	if( get_option( 'page_comments' ) ){
+		?>
+		<section class="comment-pagination pagination">
+			<?php 
+			previous_comments_link();
+			next_comments_link();
+			?>
+		</section>
+		<?php
+	}
+}
+
 
 
 //no close php
