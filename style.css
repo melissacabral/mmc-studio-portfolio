@@ -22,6 +22,7 @@ TABLE OF CONTENTS
 == Social Icons menu layout
 == Main Content Area 
 == Post content
+== Portfolio
 == Sidebar 
 == Footer
 == Pagination
@@ -514,6 +515,16 @@ img {
   height: auto;
 
 }
+.utilities ul{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: right;
+    margin-bottom: 2em;
+    gap: 1em;
+}
 
 /*
 == navigation menu
@@ -653,6 +664,58 @@ img {
   color: white;
   padding: 1em;
 }
+/*
+== Portfolio
+ */
+.page-title{
+    text-align: center;
+}
+.portfolio-submenu{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    margin-bottom: 2em;
+}
+.portfolio-submenu a{
+    padding: .5em;
+}
+.portfolio-submenu .current-cat{
+    background-color: #eee;
+}
+.cover-image{
+    display: grid;
+    grid-template: "container";
+    place-items: center;
+    place-content: center;
+    overflow: hidden;
+    /*max-height: clamp(450px, 50vh, 600px);*/
+    text-align: center;
+    color: white;
+    background-color: black;
+    line-height: 0;
+}
+.cover-image > *
+{   
+    grid-area: container; 
+    text-shadow: 0px 0px 8px rgba(0,0,0,1);    
+}
+.cover-image .wp-post-image{
+  object-fit: cover;
+ width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 1;
+}
+.cover-image .info > *{
+    margin: 0;
+    z-index: 999;
+}
+.cover-image a{
+    color: white;
+}
+
 /* 
 == Sidebar 
 */

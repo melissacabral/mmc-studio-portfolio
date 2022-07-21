@@ -37,6 +37,10 @@ add_theme_support('html5', array( 'comment-list', 'comment-form', 'search-form',
 //post formats. only use this if you have a blog
 add_theme_support('post-formats', array('quote', 'link', 'gallery'));
 
+//custom image size for the portfolio
+//				name, width, height, crop?
+add_image_size( 'banner', 1000, 300, true );
+
 /**
  * displays the featured image of the post with a container and link to single
  * @return mixed html output
@@ -248,6 +252,8 @@ function studio_comments_pagination(){
 	}
 }
 
-
+add_action('init', function() {
+	remove_theme_support('core-block-patterns');
+});
 
 //no close php
