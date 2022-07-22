@@ -28,13 +28,8 @@
        ) ); ?>
     </div>
     <div class="utilities">
-       <?php 
-        //display one of our registered menu areas
-       wp_nav_menu( array(
-         'theme_location'  => 'utilities',  //from functions.php
-         'container'       => false,       //div, nav or false
-         'fallback_cb'     => 'studio_menu_default',   // fallback if blank
-       ) ); ?>
+      <a class="cart-customlocation" href="<?php echo wc_get_cart_url(); ?>" title="<?php _e( 'View your shopping cart' ); ?>"><?php echo sprintf ( _n( '%d item', '%d items', WC()->cart->get_cart_contents_count() ), WC()->cart->get_cart_contents_count() ); ?> – <?php echo WC()->cart->get_cart_total(); ?></a>
+       <?php dynamic_sidebar( 'header_utility' ); ?>
     </div>
     <?php get_search_form(); ?>
  </header>

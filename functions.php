@@ -19,7 +19,7 @@ $args = array(
 add_theme_support('custom-header', $args);
 
 //custom logo. 
-//dev: don't forget to display the logo (header?)
+//dev: don't forget to display the logo (header?) with the_custom_logo()
 $args = array(
 	'height' => 200,
 	'width' => 200,
@@ -49,10 +49,10 @@ function studio_featured_image( $size = 'medium' ){
 	if( has_post_thumbnail() ){ ?>
 		<div class="featured-image-container">
 			<a href="<?php the_permalink(); ?>">
-			<?php the_post_thumbnail( $size ); ?>
+				<?php the_post_thumbnail( $size ); ?>
 			</a>
 		</div>
-	<?php 
+		<?php 
 	} //end if has post thumbnail
 }
 
@@ -77,17 +77,17 @@ function studio_excerpt_more(){
 /*
 example action hook - wp_footer
 */
-add_action( 'wp_footer', 'studio_copyright', 999 );
+//add_action( 'wp_footer', 'studio_copyright', 999 );
 function studio_copyright(){
 	echo '&copy; 2022 Studio Theme <br>';
 }
 
-add_action( 'wp_footer', 'another_footer_thing', 1 );
+//add_action( 'wp_footer', 'another_footer_thing', 1 );
 function another_footer_thing(){
 	echo 'this is the second hooked thingy <br>';
 }
 
-add_action( 'wp_footer', 'last_footer_thing' );
+//add_action( 'wp_footer', 'last_footer_thing' );
 function last_footer_thing(){
 	echo 'this is the third hooked thingy <br>';
 }
@@ -95,11 +95,11 @@ function last_footer_thing(){
 /*
  unhook example 
 */
-add_action('after_setup_theme', 'studio_unhook');
-function studio_unhook(){
-	remove_action( 'wp_footer', 'another_footer_thing', 1 );
-	remove_action( 'wp_footer', 'studio_copyright', 999 );
-}
+ add_action('after_setup_theme', 'studio_unhook');
+ function studio_unhook(){
+ 	remove_action( 'wp_footer', 'another_footer_thing', 1 );
+ 	remove_action( 'wp_footer', 'studio_copyright', 999 );
+ }
 
 /**
  * attach any needed CSS or JS using enqueue system
@@ -124,15 +124,7 @@ add_action( 'init' , 'studio_menu_areas' );
 function studio_menu_areas(){
 	register_nav_menus( array(
 		'main_nav' => 'Main Navigation',
-		'utilities'	=> 'Utility Area',
 	) );
-}
-
-/*
-Fallback Callback for the utility menu
-*/
-function studio_menu_default(){
-	echo 'Choose a Utility Menu in the admin panel';
 }
 
 /**
@@ -169,8 +161,24 @@ add_action( 'widgets_init', 'studio_widget_areas' );
 function studio_widget_areas(){
 	//set up one widget area
 	register_sidebar( array(
+		'name' 			=> 'Header Utility Area',
+		'id'			=> 'header_utility',
+		'before_widget' => '<section id="%1$s" class="widget %2$s">',
+		'after_widget' 	=> '</section>',
+		'before_title'	=> '<h3 class="widget-title">',
+		'after_title' 	=> '</h3>',
+	) );
+	register_sidebar( array(
 		'name' 			=> 'Blog Sidebar',
 		'id'			=> 'blog_sidebar',
+		'before_widget' => '<section id="%1$s" class="widget %2$s">',
+		'after_widget' 	=> '</section>',
+		'before_title'	=> '<h3 class="widget-title">',
+		'after_title' 	=> '</h3>',
+	) );
+	register_sidebar( array(
+		'name' 			=> 'Shop Sidebar',
+		'id'			=> 'shop_sidebar',
 		'before_widget' => '<section id="%1$s" class="widget %2$s">',
 		'after_widget' 	=> '</section>',
 		'before_title'	=> '<h3 class="widget-title">',
@@ -256,4 +264,77 @@ add_action('init', function() {
 	remove_theme_support('core-block-patterns');
 });
 
-//no close php
+
+/**
+ * WooCommerce Support and Functionality
+ */
+add_action( 'after_setup_theme', 'studio_woo_support' );
+function studio_woo_support(){
+	add_theme_support( 'woocommerce' );
+	add_theme_support( 'wc-product-gallery-zoom' );
+	add_theme_support( 'wc-product-gallery-lightbox' );
+	add_theme_support( 'wc-product-gallery-slider' );
+
+}
+
+//Change the content container to match the rest of our theme
+remove_action( 'woocommerce_before_main_content', 'woocommerce_output_content_wrapper', 10);
+remove_action( 'woocommerce_after_main_content', 'woocommerce_output_content_wrapper_end', 10);
+
+//add our own content container
+function studio_content_wrapper_start(){
+	echo '<main class="content">';
+}
+function studio_content_wrapper_end(){
+	echo '</main>';
+}
+
+add_action('woocommerce_before_main_content', 'studio_content_wrapper_start');
+add_action('woocommerce_after_main_content', 'studio_content_wrapper_end');
+
+//Remove woocommerce stylesheets
+add_filter( 'woocommerce_enqueue_styles', 'studio_remove_woo_styles' );
+function studio_remove_woo_styles( $all_stylesheets ){
+	//unset( $all_stylesheets['woocommerce-general'] ); 
+	//unset( $all_stylesheets['woocommerce-layout'] ); 
+	//unset( $all_stylesheets['woocommerce-smallscreen'] ); 
+
+	return $all_stylesheets;
+}
+
+/**
+ * Unhook and re-hook woocommerce examples
+ * remove the sidebar from single product
+ * remove the default pagination from woo and replace it with our own
+ */
+add_action('woocommerce_after_shop_loop', 'studio_pagination');
+
+add_action( 'wp', 'studio_woo_unhook' );
+
+function studio_woo_unhook() {
+	//remove sidebar from single product
+	if ( is_product() ) {
+		remove_action( 'woocommerce_sidebar', 'woocommerce_get_sidebar', 10 );
+	}
+	//remove default Woo pagination
+	remove_action('woocommerce_after_shop_loop', 'woocommerce_pagination', 10);
+}
+
+/**
+ * "hand-coded" version of the minicart block
+ * Show cart contents / total Ajax
+ */
+add_filter( 'woocommerce_add_to_cart_fragments', 'woocommerce_header_add_to_cart_fragment' );
+
+function woocommerce_header_add_to_cart_fragment( $fragments ) {
+    global $woocommerce;
+
+    ob_start();
+
+    ?>
+    <a class="cart-customlocation" href="<?php echo esc_url(wc_get_cart_url()); ?>" title="<?php _e('View your shopping cart', 'woothemes'); ?>"><?php echo sprintf(_n('%d item', '%d items', $woocommerce->cart->cart_contents_count, 'woothemes'), $woocommerce->cart->cart_contents_count);?> – <?php echo $woocommerce->cart->get_cart_total(); ?></a>
+    <?php
+    $fragments['a.cart-customlocation'] = ob_get_clean();
+    return $fragments;
+}
+

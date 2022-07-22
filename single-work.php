@@ -57,5 +57,4 @@
 <!-- end .content -->
 
 
-<?php get_sidebar(); // requires sidebar.php ?>
 <?php get_footer(); //requires footer.php ?>  
